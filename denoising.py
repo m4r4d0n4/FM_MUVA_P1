@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-from functions import grad_x,grad_y,lap
+from functions import grad_x,grad_y,lap,norma_p
 
+EASY = False
 def add_gaussian_noise(image, mean=0, sigma=45):
     """
     Function to add Gaussian noise to an image.
@@ -22,14 +23,25 @@ original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)  # Convertir de
 noisy_image = add_gaussian_noise(original_image)
 
 u = noisy_image.copy()
-lam = 0.5
-dt = 0.001
+lam = 0.1
+dt = 0.1
 
-for _ in range(1,700):
+for _ in range(1,2000):
+    if EASY:
+        lap1 = lap(u)
+        w_k = -lap1 + lam * (u - noisy_image)
+        u = u - dt * w_k
+    else:
+        u_x = grad_x(u)
+        u_y = grad_y(u)
 
-    lap1 = lap(u)
-    w_k = -lap1 + lam * (u - noisy_image)
-    u = u - dt * w_k
+        normap = norma_p(u,0.75)
+        lap = grad_x(normap * u_x) + grad_y(normap * u_y)
+            
+        wk = -lap + lam*(u-noisy_image)
+            
+        u = u - dt*wk
+
 
 
 # Crear una figura con dos subgráficos
