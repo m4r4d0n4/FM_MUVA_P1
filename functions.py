@@ -28,9 +28,8 @@ def lap(image):
     grady = grad_y(image)
     
     return grad_x(gradx) + grad_y(grady)
-def grad(imagen):
-    return np.hstack((grad_x(imagen),grad_y(imagen)))
 
-def norma_p(imagen,grad)
-    norma = np.sqrt(grad[0]**2 + gradiente[1]**2)
-    return norma**p
+def norma_p(imagen,p,epsilon=0.001):
+    
+    norma = np.sqrt(grad_x(imagen)**2 + grad_y(imagen)**2 + epsilon**2)
+    return norma**(p-2)
