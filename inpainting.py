@@ -3,6 +3,23 @@ import matplotlib.pyplot as plt
 import cv2
 from functions import grad_x,grad_y,norma_p
 import random
+
+def calcular_psnr(imagen_original, imagen_procesada):
+    # Convertir las imágenes a float32
+    imagen_original = imagen_original.astype(np.float32)
+    imagen_original /= 255 
+    imagen_procesada = imagen_procesada.astype(np.float32)
+    # Calcular el MSE (Error Cuadrático Medio)
+    mse = np.mean((imagen_original - imagen_procesada) ** 2)
+    if mse == 0:
+        return float('inf')
+    print(np.sqrt(mse))
+    # Calcular el PSNR
+    max_pixel = 1.0
+    psnr = 20 * np.log10(max_pixel / np.sqrt(mse))
+    return psnr
+
+
 # Cargar la imagen
 image_path = "images/rock_transgresivo.jpg"  # Ruta de la imagen
 original_image = cv2.imread(image_path)
@@ -22,7 +39,7 @@ mascara[:,:,:] = lam
 
 altura, anchura = imagen.shape[0], imagen.shape[1]
 num_circulos, radio_min, radio_max = 20,5,12
-puntos = np.random.randint(0, min(anchura, altura), size=(num_circulos, 2))
+puntos = np.random.randint(15, min(anchura-15, altura-15), size=(num_circulos, 2))
 radios = np.random.randint(radio_min, radio_max, size=num_circulos)
 
 for punto, radio in zip(puntos, radios):
@@ -60,15 +77,18 @@ axes[0].imshow(original_image)
 axes[0].set_title('Imagen Original')
 axes[0].axis('off')
 
+
 # Mostrar la imagen con ruido en el segundo subgráfico
 axes[1].imshow(imagen)
 axes[1].set_title('Máscara')
 axes[1].axis('off')
 
+
 u = u / 255
+psnr = calcular_psnr(original_image,u)
 #u = u - imagen
 axes[2].imshow(u)
-axes[2].set_title('Inpainting')
+axes[2].set_title(f'Inpainting PSNR:{psnr}')
 axes[2].axis('off')
 
 # Ajustar el espaciado entre subgráficos
